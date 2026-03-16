@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body class="dashboard-body">
+    <!-- Mobile Header (visible on mobile) -->
+<div class="mobile-header">
+        <button class="hamburger-btn">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <div style="width: 40px;"></div>
+        <a href="/" class="mobile-logo">
+            <div class="mobile-logo-icon">
+                <i class="fas fa-train"></i>
+            </div>
+            RailBusAtithi
+        </a>
+    </div>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="mobile-logo">
+            <div class="mobile-logo-icon">
+                <i class="fas fa-train"></i>
+            </div>
+            RailBusAtithi
+        </a>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar" style="background: linear-gradient(135deg, #FF6D00 0%, #FF9100 100%);">{{ user.name[0] }}</div>
+                <div class="user-info">
+                    <h4>{{ user.name }}</h4>
+                    <span>Hotel Owner</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('hotel_owner_dashboard') }}" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('add_hotel') }}" class="menu-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Hotel</span>
+                </a>
+                <a href="{{ url_for('owner_hotels') }}" class="menu-item">
+                    <i class="fas fa-hotel"></i>
+                    <span>My Hotels</span>
+                </a>
+                <a href="{{ url_for('owner_bookings') }}" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="{{ url_for('owner_analytics') }}" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('owner_settings') }}" class="menu-item active">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="page-title">Settings</h1>
+            </div>
+            
+            <!-- Profile Stats Cards - Better Layout -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="stat-value">{{ user.name }}</div>
+                    <div class="stat-label">Full Name</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="stat-value">{{ user.email }}</div>
+                    <div class="stat-label">Email Address</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="stat-value">{{ user.phone or 'Not set' }}</div>
+                    <div class="stat-label">Phone Number</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="stat-value">{{ user.city or 'Not set' }}, {{ user.location or 'Not set' }}</div>
+                    <div class="stat-label">Location</div>
+                </div>
+            </div>
+
+            <!-- Edit Profile Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('owner_update_profile') }}">
+                        <input type="hidden" name="action" value="update_profile">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">Full Name</label>
+                                <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" name="phone" class="form-control" value="{{ user.phone or '' }}">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Change Password Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-lock"></i> Change Password
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('owner_change_password') }}">
+                        <input type="hidden" name="action" value="change_password">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">Current Password</label>
+                                <input type="password" name="current_password" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">New Password</label>
+                                <input type="password" name="new_password" class="form-control" required minlength="8">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">Confirm New Password</label>
+                                <input type="password" name="confirm_password" class="form-control" required minlength="8">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key"></i> Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Account Info -->
+            <div class="card" style="margin-top: 25px;">
+                <div class="card-header">
+                    <h3 class="card-title">Account Information</h3>
+                </div>
+                <div class="card-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="color: #666; font-size: 13px;">Member Since</div>
+                            <div style="font-size: 16px; font-weight: 600;">{{ user.created_at.strftime('%d %b %Y') }}</div>
+                        </div>
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="color: #666; font-size: 13px;">Total Hotels</div>
+                            <div style="font-size: 16px; font-weight: 600;">{{ hotels_count }}</div>
+                        </div>
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="color: #666; font-size: 13px;">Total Bookings</div>
+                            <div style="font-size: 16px; font-weight: 600;">{{ bookings_count }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- JS handled by main.js - no inline scripts needed -->
+</body>
+</html>
+

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body class="dashboard-body">
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
+    
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="hamburger-btn" id="hamburgerBtn">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <a href="/" class="mobile-logo">
+            <div class="mobile-logo-icon">
+                <i class="fas fa-train"></i>
+            </div>
+            RailBusAtithi
+        </a>
+    </div>
+    
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    RailBusAtithi
+                </a>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">{{ user.name[0] }}</div>
+                <div class="user-info">
+                    <h4>{{ user.name }}</h4>
+                    <span>{{ user.role }}</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('passenger_dashboard') }}" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('index') }}#hotels" class="menu-item">
+                    <i class="fas fa-search"></i>
+                    <span>Search Hotels</span>
+                </a>
+                <a href="{{ url_for('booking_history') }}" class="menu-item">
+                    <i class="fas fa-history"></i>
+                    <span>Booking History</span>
+                </a>
+                <a href="{{ url_for('favorites') }}" class="menu-item">
+                    <i class="fas fa-heart"></i>
+                    <span>Favorites</span>
+                </a>
+                <a href="{{ url_for('profile') }}" class="menu-item active">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="{{ url_for('settings') }}" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="page-title">My Profile</h1>
+            </div>
+            
+            <!-- Profile Card -->
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('update_profile') }}">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                                <small style="color: #666;">Email cannot be changed</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" name="phone" class="form-control" value="{{ user.phone or '' }}" placeholder="Enter phone number">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Account Type</label>
+                                <input type="text" class="form-control" value="{{ user.role|title }}" disabled>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Member Since</label>
+                                <input type="text" class="form-control" value="{{ user.created_at.strftime('%B %d, %Y') if user.created_at else 'N/A' }}" disabled>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Stats Summary -->
+            <div class="stats-grid" style="margin-top: 25px;">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value">{{ user.bookings|length }}</div>
+                    <div class="stat-label">Total Bookings</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value">{{ user.bookings|selectattr('status', 'equalto', 'confirmed')|list|length }}</div>
+                    <div class="stat-label">Confirmed</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-value">{{ user.reviews|length }}</div>
+                    <div class="stat-label">Reviews</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
+</html>

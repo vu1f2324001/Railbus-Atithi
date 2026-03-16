@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - RailBusAtithi Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body class="dashboard-body">
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="hamburger-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <a href="/" class="mobile-logo">
+            <div class="mobile-logo-icon">
+                <i class="fas fa-train"></i>
+            </div>
+            RailBusAtithi
+        </a>
+        <div style="width: 40px;"></div>
+    </div>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    RailBusAtithi
+                </a>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar" style="background: linear-gradient(135deg, #7C4DFF 0%, #B388FF 100%);">{{ user.name[0] }}</div>
+                <div class="user-info">
+                    <h4>{{ user.name }}</h4>
+                    <span>Administrator</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('admin_dashboard') }}" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('manage_users') }}" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+                <a href="{{ url_for('manage_hotels') }}" class="menu-item">
+                    <i class="fas fa-hotel"></i>
+                    <span>Hotels</span>
+                </a>
+                <a href="{{ url_for('manage_bookings') }}" class="menu-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="{{ url_for('analytics') }}" class="menu-item active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('admin_ads') }}" class="menu-item">
+                    <i class="fas fa-ad"></i>
+                    <span>Advertisements</span>
+                </a>
+                <a href="{{ url_for('admin_settings') }}" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="page-title">Analytics</h1>
+                <style>
+                    .trend {
+                        font-size: 0.85em;
+                        font-weight: bold;
+                        padding: 2px 8px;
+                        border-radius: 12px;
+                        margin-left: 8px;
+                    }
+                    .positive {
+                        background: rgba(76, 175, 80, 0.2);
+                        color: #4CAF50;
+                    }
+                    .status-value {
+                        font-weight: bold;
+                    }
+                </style>
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-users"></i>
+                    </div>
+<div class="stat-value" title="Growth last 30 days">{{ total_users }} <span class="trend positive">+12%</span></div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-hotel"></i>
+                    </div>
+<div class="stat-value" title="Growth last 30 days">{{ total_hotels }} <span class="trend positive">+8%</span></div>
+                    <div class="stat-label">Total Hotels</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+<div class="stat-value" title="Growth last 30 days">{{ total_bookings }} <span class="trend positive">+25%</span></div>
+                    <div class="stat-label">Total Bookings</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+<div class="stat-value" title="Growth last 30 days">₹{{ total_revenue|int }} <span class="trend positive">+18%</span></div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            </div>
+            
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <!-- Booking Status -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Bookings by Status</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="hotel-status">
+                            <div class="status-item">
+                                <div class="status-header">
+                                    <span class="status-label">Confirmed</span>
+<span class="status-value approved">{{ bookings_by_status.confirmed }} ({{ "%.1f"|format((bookings_by_status.confirmed / total_bookings * 100) if total_bookings > 0 else 0 ) }}%)</span>
+                                </div>
+                                <div class="status-bar">
+                                    <div class="status-fill approved" style="width: {{ (bookings_by_status.confirmed / total_bookings * 100) if total_bookings > 0 else 0 }}%;"></div>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-header">
+                                    <span class="status-label">Pending</span>
+<span class="status-value pending">{{ bookings_by_status.pending }} ({{ "%.1f"|format((bookings_by_status.pending / total_bookings * 100) if total_bookings > 0 else 0 ) }}%)</span>
+                                </div>
+                                <div class="status-bar">
+                                    <div class="status-fill pending" style="width: {{ (bookings_by_status.pending / total_bookings * 100) if total_bookings > 0 else 0 }}%;"></div>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-header">
+                                    <span class="status-label">Completed</span>
+<span class="status-value" style="color: #1E88E5;">{{ bookings_by_status.completed }} ({{ "%.1f"|format((bookings_by_status.completed / total_bookings * 100) if total_bookings > 0 else 0 ) }}%)</span>
+                                </div>
+                                <div class="status-bar">
+                                    <div class="status-fill" style="width: {{ (bookings_by_status.completed / total_bookings * 100) if total_bookings > 0 else 0 }}%; background: linear-gradient(90deg, #1E88E5 0%, #42A5F5 100%);"></div>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-header">
+                                    <span class="status-label">Cancelled</span>
+<span class="status-value" style="color: #f44336;">{{ bookings_by_status.cancelled }} ({{ "%.1f"|format((bookings_by_status.cancelled / total_bookings * 100) if total_bookings > 0 else 0 ) }}%)</span>
+                                </div>
+                                <div class="status-bar">
+                                    <div class="status-fill" style="width: {{ (bookings_by_status.cancelled / total_bookings * 100) if total_bookings > 0 else 0 }}%; background: linear-gradient(90deg, #f44336 0%, #ef5350 100%);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Top Cities -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Hotels by City</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if top_cities %}
+                        <div class="user-distribution">
+                            {% for city, count in top_cities %}
+                            <div class="distribution-item">
+                                <div class="distribution-circle blue">
+                                    <i class="fas fa-city"></i>
+                                </div>
+                                <div class="distribution-number">{{ count }}</div>
+                                <div class="distribution-label">{{ city }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p style="text-align: center; color: #666;">No data available</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+        document.querySelector('.hamburger-btn')?.addEventListener('click', toggleSidebar);
+        document.querySelector('.sidebar-overlay')?.addEventListener('click', toggleSidebar);
+    </script>
+</body>
+</html>

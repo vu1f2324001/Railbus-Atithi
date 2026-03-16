@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body class="auth-page">
+    <!-- Auth Background -->
+    <div class="auth-bg"></div>
+    
+    <!-- Auth Container -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Logo -->
+            <div class="auth-header">
+                <a href="/" class="auth-logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    <div class="logo-text">
+                        Rail<span>Bus</span>Atithi
+                    </div>
+                </a>
+                <h1>Welcome Back</h1>
+                <p>Sign up to continue your journey</p>
+            </div>
+            
+            <!-- Register Form -->
+            <form method="POST" action="{{ url_for('register') }}" class="auth-form">
+                <div class="form-group">
+                    <label for="name" class="form-label required">Full Name</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="name" name="name" class="form-control" 
+                               placeholder="Enter your full name" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="phone" name="phone" class="form-control" 
+                               placeholder="Enter phone number">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label required">Email Address</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" class="form-control" 
+                               placeholder="Enter your email address" required>
+                    </div>
+                </div>
+                
+<div class="form-row">
+                    <div class="form-group">
+                        <label for="role" class="form-label required">Account Type</label>
+                        <div class="input-group">
+                            <i class="fas fa-user-tag"></i>
+                            <select id="role" name="role" class="form-control">
+                                <option value="">Select account type</option>
+                                <option value="passenger">Passenger / Traveler</option>
+                                <option value="hotel_owner">Hotel Owner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group password-field">
+                        <label for="password" class="form-label required">Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" class="form-control" 
+                                   placeholder="Create a strong password (8+ chars)" required minlength="8">
+                            <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <span class="strength-text" id="strengthText">Password strength: Weak</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group password-field">
+                        <label for="confirm_password" class="form-label required">Confirm Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control" 
+                                   placeholder="Confirm your password" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword('confirm_password')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-match" id="passwordMatch"></div>
+                    </div>
+                </div>
+
+                <!-- Hotel Owner Location Fields (Conditional) -->
+                <div id="hotelOwnerFields" class="hotel-owner-fields" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city" class="form-label required">City <span style="color: #FF6D00;">*</span></label>
+                            <div class="input-group">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <input type="text" id="city" name="city" class="form-control" 
+                                       placeholder="Enter city (e.g., Mumbai)" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="location" class="form-label required">Location/Address <span style="color: #FF6D00;">*</span></label>
+                            <div class="input-group">
+                                <i class="fas fa-map-pin"></i>
+                                <textarea id="location" name="location" class="form-control" rows="2" 
+                                          placeholder="Enter complete address near station/bus stand" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="terms" required>
+                        <span>I agree to Terms & Conditions</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+            
+            <!-- Login Link -->
+            <p class="auth-footer">
+                Already have an account? 
+                <a href="{{ url_for('login') }}">Sign In</a>
+            </p>
+        </div>
+        
+        <!-- Info Side -->
+        <div class="auth-info">
+            <h2>Join RailBusAtithi</h2>
+            <p>Book hotels near railway stations and bus stands across India.</p>
+            <ul class="info-features">
+                <li><i class="fas fa-check-circle"></i> Quick Registration</li>
+                <li><i class="fas fa-check-circle"></i> Instant Booking</li>
+                <li><i class="fas fa-check-circle"></i> Secure Account</li>
+                <li><i class="fas fa-check-circle"></i> 24/7 Support</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <script>
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        // Password validation (simple)
+        document.getElementById('password').addEventListener('input', function() {
+            const strength = document.getElementById('strengthFill');
+            const value = this.value;
+            let score = 0;
+            
+            if (value.length >= 8) score++;
+            if (/[a-z]/.test(value) && /[A-Z]/.test(value)) score++;
+            if (/\d/.test(value)) score++;
+            if (/[^a-zA-Z\d]/.test(value)) score++;
+            
+            strength.className = 'strength-fill';
+            if (score === 1) strength.classList.add('weak');
+            else if (score === 2) strength.classList.add('medium');
+            else if (score >= 3) strength.classList.add('strong');
+        });
+
+        // Password match check
+        document.getElementById('confirm_password').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const match = document.getElementById('passwordMatch');
+            
+            if (this.value === password && this.value.length > 0) {
+                match.textContent = 'Passwords match ✓';
+                match.className = 'password-match match';
+            } else if (this.value.length > 0) {
+                match.textContent = 'Passwords do not match ✗';
+                match.className = 'password-match mismatch';
+            } else {
+                match.textContent = '';
+                match.className = 'password-match';
+            }
+        });
+
+        // Hotel Owner fields toggle
+        document.getElementById('role').addEventListener('change', function() {
+            const hotelFields = document.getElementById('hotelOwnerFields');
+            if (this.value === 'hotel_owner') {
+                hotelFields.style.display = 'block';
+                document.getElementById('city').required = true;
+                document.getElementById('location').required = true;
+            } else {
+                hotelFields.style.display = 'none';
+                document.getElementById('city').required = false;
+                document.getElementById('location').required = false;
+            }
+        });
+    </script>
+</body>
+</html>
+

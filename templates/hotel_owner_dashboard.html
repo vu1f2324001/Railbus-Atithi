@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body id="owner-dashboard" class="dashboard-body">
+    <!-- Mobile Header (visible on mobile) -->
+    <div class="mobile-header">
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <a href="/" class="mobile-logo">
+            <div class="mobile-logo-icon">
+                <i class="fas fa-train"></i>
+            </div>
+            RailBusAtithi
+        </a>
+    </div>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    RailBusAtithi
+                </a>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar owner">{{ user.name[0] }}</div>
+                <div class="user-info">
+                    <h4>{{ user.name }}</h4>
+                    <span>Hotel Owner</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('hotel_owner_dashboard') }}" class="menu-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('add_hotel') }}" class="menu-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Hotel</span>
+                </a>
+                <a href="{{ url_for('owner_hotels') }}" class="menu-item">
+                    <i class="fas fa-hotel"></i>
+                    <span>My Hotels</span>
+                </a>
+                <a href="{{ url_for('owner_bookings') }}" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="{{ url_for('owner_analytics') }}" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('owner_settings') }}" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="page-title">Owner Dashboard</h1>
+                <div class="header-actions">
+                    <a href="{{ url_for('add_hotel') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New Hotel
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="stats-grid">
+                <div class="stat-card animate-fade animate-delay-1">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-hotel"></i>
+                    </div>
+                    <div class="stat-value">{{ hotels|length }}</div>
+                    <div class="stat-label">Total Hotels</div>
+                </div>
+                
+                <div class="stat-card animate-fade animate-delay-2">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value">{{ total_bookings }}</div>
+                    <div class="stat-label">All Bookings</div>
+                </div>
+                
+                <div class="stat-card animate-fade animate-delay-3">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="stat-value">{{ confirmed_bookings }}</div>
+                    <div class="stat-label">Confirmed</div>
+                </div>
+                
+                <div class="stat-card animate-fade animate-delay-4">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <div class="stat-value">₹{{ total_revenue|int }}</div>
+                    <div class="stat-label">Revenue</div>
+                </div>
+            </div>
+            
+            <div class="charts-row">
+                <!-- Recent Hotels Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Hotels</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if hotels %}
+                        <div class="hotel-cards-grid">
+                            {% for hotel in hotels[:3] %}
+                            <div class="hotel-card-dashboard">
+                                <div class="hotel-card-image">
+                                    {% if hotel.photos %}
+                                    {% set first_photo = hotel.photos.split(',')[0] %}
+                                    <img src="{{ url_for('static', filename='uploads/' + first_photo) }}" alt="{{ hotel.name }}">
+                                    {% else %}
+                                    <i class="fas fa-hotel"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="hotel-card-body">
+                                    <h3 class="hotel-card-name">{{ hotel.name }}</h3>
+                                    <p class="hotel-card-location">
+                                        <i class="fas fa-map-marker-alt"></i> {{ hotel.city }}
+                                    </p>
+                                    <div class="hotel-card-footer">
+                                        <div class="hotel-card-price">₹{{ hotel.price }}/night</div>
+                                        <span class="status-badge {{ 'confirmed' if hotel.approved else 'pending' }}">
+                                            {{ 'Approved' if hotel.approved else 'Pending' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">🏨</div>
+                            <h3 class="empty-title">No Hotels Yet</h3>
+                            <p class="empty-text">Add your first hotel to get started</p>
+                            <a href="{{ url_for('add_hotel') }}" class="btn btn-primary">Add Hotel</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Recent Bookings -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Bookings</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if bookings %}
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Hotel</th>
+                                        <th>Guest</th>
+                                        <th>Check-in</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in bookings[:5] %}
+                                    <tr>
+                                        <td>{{ booking.hotel.name[:25] }}...</td>
+                                        <td>{{ booking.user.name }}</td>
+                                        <td>{{ booking.check_in.strftime('%d %b') }}</td>
+                                        <td><span class="status-badge {{ booking.status }}">{{ booking.status.title() }}</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">📋</div>
+                            <h3 class="empty-title">No Bookings</h3>
+                            <p>Add hotels to start receiving bookings</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card mt-25">
+                <div class="card-header">
+                    <h3 class="card-title">Quick Actions</h3>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions-grid">
+                        <a href="{{ url_for('add_hotel') }}" class="quick-action-item">
+                            <i class="fas fa-plus-circle quick-action-icon orange"></i>
+                            <div class="quick-action-title">Add Hotel</div>
+                        </a>
+                        <a href="{{ url_for('owner_hotels') }}" class="quick-action-item">
+                            <i class="fas fa-hotel quick-action-icon blue"></i>
+                            <div class="quick-action-title">View Hotels</div>
+                        </a>
+                        <a href="{{ url_for('owner_bookings') }}" class="quick-action-item">
+                            <i class="fas fa-calendar-alt quick-action-icon teal"></i>
+                            <div class="quick-action-title">Bookings</div>
+                        </a>
+                        <a href="{{ url_for('owner_analytics') }}" class="quick-action-item">
+                            <i class="fas fa-chart-line quick-action-icon purple"></i>
+                            <div class="quick-action-title">Analytics</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- JS handled by main.js - no inline scripts needed -->
+</body>
+</html>

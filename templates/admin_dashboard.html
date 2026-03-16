@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body class="dashboard-body">
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="hamburger-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <a href="/" class="mobile-logo">
+            <div class="mobile-logo-icon">
+                <i class="fas fa-train"></i>
+            </div>
+            RailBusAtithi
+        </a>
+        <div style="width: 40px;"></div>
+    </div>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    RailBusAtithi
+                </a>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar" style="background: linear-gradient(135deg, #7C4DFF 0%, #B388FF 100%);">{{ user.name[0] }}</div>
+                <div class="user-info">
+                    <h4>{{ user.name }}</h4>
+                    <span>Administrator</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('admin_dashboard') }}" class="menu-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('manage_users') }}" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+                <a href="{{ url_for('manage_hotels') }}" class="menu-item">
+                    <i class="fas fa-hotel"></i>
+                    <span>Hotels</span>
+                </a>
+                <a href="{{ url_for('manage_bookings') }}" class="menu-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="{{ url_for('analytics') }}" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('admin_ads') }}" class="menu-item">
+                    <i class="fas fa-ad"></i>
+                    <span>Advertisements</span>
+                </a>
+                <a href="{{ url_for('admin_settings') }}" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="page-title">Admin Dashboard</h1>
+                <div class="header-actions">
+                    <a href="{{ url_for('manage_hotels') }}" class="btn btn-primary">
+                        <i class="fas fa-check-circle"></i> Pending Approvals ({{ pending_hotels }})
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card animate-fade animate-delay-1">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value">{{ total_users }}</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                
+                <div class="stat-card animate-fade animate-delay-2">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-hotel"></i>
+                    </div>
+                    <div class="stat-value">{{ total_hotels }}</div>
+                    <div class="stat-label">Total Hotels</div>
+                </div>
+                
+                <div class="stat-card animate-fade animate-delay-3">
+                    <div class="stat-icon green">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value">{{ total_bookings }}</div>
+                    <div class="stat-label">Total Bookings</div>
+                </div>
+                
+                <div class="stat-card animate-fade animate-delay-4">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <div class="stat-value">₹{{ total_revenue|int }}</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            </div>
+            
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <!-- User Distribution -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">User Distribution</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="user-distribution">
+                            <div class="distribution-item">
+                                <div class="distribution-circle blue">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="distribution-number">{{ passengers }}</div>
+                                <div class="distribution-label">Passengers</div>
+                            </div>
+                            <div class="distribution-item">
+                                <div class="distribution-circle orange">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="distribution-number">{{ hotel_owners }}</div>
+                                <div class="distribution-label">Hotel Owners</div>
+                            </div>
+                            <div class="distribution-item">
+                                <div class="distribution-circle purple">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <div class="distribution-number">1</div>
+                                <div class="distribution-label">Admins</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hotel Status -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Hotel Status</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="hotel-status">
+                            <div class="status-item">
+                                <div class="status-header">
+                                    <span class="status-label">Approved</span>
+                                    <span class="status-value approved">{{ approved_hotels }}</span>
+                                </div>
+                                <div class="status-bar">
+                                    <div class="status-fill approved" style="width: {{ (approved_hotels / total_hotels * 100) if total_hotels > 0 else 0 }}%;"></div>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-header">
+                                    <span class="status-label">Pending</span>
+                                    <span class="status-value pending">{{ pending_hotels }}</span>
+                                </div>
+                                <div class="status-bar">
+                                    <div class="status-fill pending" style="width: {{ (pending_hotels / total_hotels * 100) if total_hotels > 0 else 0 }}%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Bookings -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Bookings</h3>
+                    <a href="{{ url_for('manage_bookings') }}" class="btn btn-primary btn-sm">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_bookings %}
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>User</th>
+                                    <th>Hotel</th>
+                                    <th>Check-in</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in recent_bookings %}
+                                <tr>
+                                    <td>#RB{{ '%04d'|format(booking.id) }}</td>
+                                    <td>{{ booking.user.name }}</td>
+                                    <td>{{ booking.hotel.name }}</td>
+                                    <td>{{ booking.check_in.strftime('%d %b %Y') }}</td>
+                                    <td><strong>₹{{ booking.total_price|int }}</strong></td>
+                                    <td>
+                                        <span class="status-badge {{ booking.status }}">
+                                            {{ booking.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <h3 class="empty-title">No Bookings Yet</h3>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card mt-25">
+                <div class="card-header">
+                    <h3 class="card-title">Quick Actions</h3>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions-grid">
+                        <a href="{{ url_for('manage_users') }}" class="quick-action-item">
+                            <i class="fas fa-user-plus quick-action-icon blue"></i>
+                            <h4 class="quick-action-title">Manage Users</h4>
+                        </a>
+                        <a href="{{ url_for('manage_hotels') }}" class="quick-action-item">
+                            <i class="fas fa-building quick-action-icon orange"></i>
+                            <h4 class="quick-action-title">Manage Hotels</h4>
+                        </a>
+                        <a href="{{ url_for('manage_bookings') }}" class="quick-action-item">
+                            <i class="fas fa-calendar quick-action-icon teal"></i>
+                            <h4 class="quick-action-title">View Bookings</h4>
+                        </a>
+                        <a href="{{ url_for('analytics') }}" class="quick-action-item">
+                            <i class="fas fa-chart-bar quick-action-icon purple"></i>
+                            <h4 class="quick-action-title">Analytics</h4>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Toggle sidebar for mobile
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+        
+        // Add click handler to hamburger button
+        document.querySelector('.hamburger-btn')?.addEventListener('click', toggleSidebar);
+        
+        // Add click handler to sidebar overlay
+        document.querySelector('.sidebar-overlay')?.addEventListener('click', toggleSidebar);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ hotel.name }} - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+    <style>
+        .hotel-detail-section {
+            padding: 120px 0 80px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f8ff 100%);
+        }
+        .hotel-detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+        .hotel-images {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .hotel-main-image {
+            height: 500px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .hotel-main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .hotel-main-image:hover img {
+            transform: scale(1.05);
+        }
+        .hotel-thumbs {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .hotel-thumb {
+            height: 140px;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+        .hotel-thumb:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+        .hotel-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .booking-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 120px;
+            backdrop-filter: blur(20px);
+        }
+        .price-badge {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 20px 30px;
+            border-radius: 20px;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 25px;
+            box-shadow: 0 15px 40px rgba(30,136,229,0.3);
+        }
+        .price-badge span {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .hotel-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            color: var(--text-light);
+        }
+        .meta-icon {
+            color: var(--primary);
+            font-size: 18px;
+        }
+        .availability-badge {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .booking-form {
+            margin-top: 20px;
+        }
+        .date-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: var(--background);
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(30,136,229,0.1);
+            background: var(--white);
+        }
+        .guest-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .btn-book {
+            width: 100%;
+            height: 56px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+            color: var(--white);
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255,109,0,0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-book:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255,109,0,0.4);
+        }
+        .amenities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin: 25px 0;
+        }
+        .amenity-tag {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .amenity-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .location-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .location-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .location-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .location-train {
+            background: linear-gradient(135deg, #1E88E5 0%, #42A5F5 100%);
+            color: var(--white);
+        }
+        .location-bus {
+            background: linear-gradient(135deg, #FF6D00 0%, #FF8F00 100%);
+            color: var(--white);
+        }
+        .location-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+        .location-distance {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .review-section {
+            margin-top: 40px;
+        }
+        .review-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .review-rating {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .review-count {
+            color: var(--text-light);
+            font-size: 15px;
+        }
+        .review-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .review-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .review-author {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        .review-date {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .review-stars {
+            display: flex;
+            gap: 2px;
+        }
+        .review-stars i {
+            color: #FFC107;
+            font-size: 14px;
+        }
+        .review-text {
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+        .no-reviews {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .no-reviews i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        @media (max-width: 1024px) {
+            .hotel-detail-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .booking-card {
+                position: static;
+            }
+            .hotel-images {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .date-row, .guest-row {
+                grid-template-columns: 1fr;
+            }
+            .price-badge {
+                font-size: 28px;
+                padding: 16px 24px;
+            }
+            .hotel-detail-section {
+                padding: 100px 0 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    <div class="logo-text">
+                        Rail<span>Bus</span>Atithi
+                    </div>
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#hotels">Hotels</a></li>
+                    {% if session.get('user_id') %}
+                        <li><a href="{{ url_for('passenger_dashboard') }}">Dashboard</a></li>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline btn-sm">Login</a>
+                        <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">Sign Up</a>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hotel Detail Section -->
+    <section class="hotel-detail-section">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <div style="margin-bottom: 20px;">
+                <a href="/" style="color: #666;">Home</a> / 
+                <a href="/search?city={{ hotel.city }}" style="color: #666;">{{ hotel.city }}</a> / 
+                <span style="color: #1E88E5;">{{ hotel.name }}</span>
+            </div>
+            
+            <div class="hotel-detail-grid">
+                <!-- Left Column -->
+                <div>
+                    <h1 style="font-size: 32px; font-weight: 700; margin-bottom: 10px;">{{ hotel.name }}</h1>
+                    <p style="color: #666; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-map-marker-alt" style="color: #FF6D00;"></i>
+                        {{ hotel.location }}, {{ hotel.city }}
+                    </p>
+                    
+                    <!-- Images -->
+                    <div class="hotel-images">
+                        <div class="hotel-main-image">
+                            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="{{ hotel.name }}">
+                        </div>
+                        <div class="hotel-thumb">
+                            <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Hotel">
+                        </div>
+                        <div class="hotel-thumb">
+                            <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Room">
+                        </div>
+                    </div>
+                    
+                    <!-- About -->
+                    <div class="card" style="margin-bottom: 25px;">
+                        <div class="card-header">
+                            <h3 class="card-title">About This Hotel</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>{{ hotel.description or 'Comfortable stay with modern amenities near railway station and bus stand.' }}</p>
+                            
+                            <h4 style="margin: 20px 0 15px;">Amenities</h4>
+                            <div class="amenities-list">
+                                {% for amenity in amenities %}
+                                <span class="amenity-tag">
+                                    <i class="fas fa-check"></i> {{ amenity.strip() }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                            
+                            <h4 style="margin: 20px 0 15px;">Location Details</h4>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                                <div style="padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                                    <i class="fas fa-train" style="color: #1E88E5; margin-right: 8px;"></i>
+                                    <strong>Railway Station:</strong><br>
+                                    {{ hotel.near_station }}<br>
+                                    <small style="color: #666;">{{ hotel.distance_station }} km away</small>
+                                </div>
+                                <div style="padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                                    <i class="fas fa-bus" style="color: #FF6D00; margin-right: 8px;"></i>
+                                    <strong>Bus Stand:</strong><br>
+                                    {{ hotel.near_bus_stop }}<br>
+                                    <small style="color: #666;">{{ hotel.distance_bus }} km away</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reviews -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Reviews ({{ hotel.review_count }})</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if reviews %}
+                                {% for review in reviews %}
+                                <div class="review-card">
+                                    <div class="review-header">
+                                        <div>
+                                            <span class="review-user">{{ review.user.name }}</span>
+                                            <div class="star-rating">
+                                                {% for i in range(5) %}
+                                                    {% if i < review.rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <span class="review-date">{{ review.created_at.strftime('%d %b %Y') }}</span>
+                                    </div>
+                                    <p>{{ review.comment }}</p>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p style="text-align: center; color: #666; padding: 30px;">No reviews yet. Be the first to review!</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column - Booking Card -->
+                <div>
+                    <div class="booking-card">
+                        <div class="price-tag">
+                            ₹{{ hotel.price }}<span>/night</span>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
+                            <div class="hotel-rating">
+                                <span class="stars">
+                                    {% for i in range(5) %}
+                                        {% if i < hotel.rating|int %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="rating-value">{{ hotel.rating }}</span>
+                                <span class="review-count">({{ hotel.review_count }} reviews)</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin: 20px 0; padding: 15px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee;">
+                            <p style="margin-bottom: 8px;"><strong>Available Rooms:</strong> {{ hotel.available_rooms }} / {{ hotel.total_rooms }}</p>
+                        </div>
+                        
+                        {% if session.get('user_id') and session.get('user_role') == 'passenger' %}
+                        <form method="POST" action="{{ url_for('book_hotel', hotel_id=hotel.id) }}">
+                            <div class="form-group">
+                                <label class="form-label">Check-in Date</label>
+                                <input type="date" name="check_in" class="form-control" required min="{{ '' }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Check-out Date</label>
+                                <input type="date" name="check_out" class="form-control" required>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label class="form-label">Rooms</label>
+                                    <select name="rooms" class="form-control">
+                                        {% set max_rooms = 4 if hotel.available_rooms >= 4 else hotel.available_rooms + 1 %}
+                                        {% for i in range(1, max_rooms) %}
+                                        <option value="{{ i }}">{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Guests</label>
+                                    <select name="guests" class="form-control">
+                                        {% for i in range(1, 5) %}
+                                        <option value="{{ i }}">{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Special Requests</label>
+                                <textarea name="special_requests" class="form-control" rows="2" placeholder="Any special requests..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                <i class="fas fa-check"></i> Book Now
+                            </button>
+                        </form>
+                        {% elif not session.get('user_id') %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg btn-block">
+                            <i class="fas fa-sign-in-alt"></i> Login to Book
+                        </a>
+                        {% else %}
+                        <p style="text-align: center; color: #666;">Only passengers can book hotels.</p>
+                        {% endif %}
+                        
+                        <p style="text-align: center; margin-top: 15px; font-size: 13px; color: #999;">
+                            <i class="fas fa-shield-alt"></i> Free cancellation up to 24 hours before check-in
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-train"></i>
+                        </div>
+                        <div class="logo-text">
+                            Rail<span>Bus</span>Atithi
+                        </div>
+                    </div>
+                    <p style="color: rgba(255,255,255,0.8); margin-top: 15px; line-height: 1.6;">
+                        Book hotels near railway stations and bus stands. Safe, convenient travel across India.
+                    </p>
+                    <div class="footer-social" style="margin-top: 20px;">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p style="margin: 0; color: rgba(255,255,255,0.6);">
+&copy; 2026 RailBusAtithi. All rights reserved. | Designed for seamless travel booking.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            input.min = today;
+        });
+    </script>
+</body>
+</html>
+

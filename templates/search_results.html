@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    <div class="logo-text">
+                        Rail<span>Bus</span>Atithi
+                    </div>
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#hotels">Hotels</a></li>
+                    {% if session.get('user_id') %}
+                        <li><a href="{{ url_for('passenger_dashboard') }}">Dashboard</a></li>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline btn-sm">Login</a>
+                        <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">Sign Up</a>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Search Section -->
+    <section style="background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%); padding: 100px 0 40px; margin-top: 60px;">
+        <div class="container">
+            <div class="search-box">
+                <form class="search-form" method="GET" action="/search">
+                    <div class="search-group">
+                        <label>City</label>
+                        <input type="text" id="city" name="city" placeholder="Enter city name" value="{{ city }}" required>
+                    </div>
+                    <div class="search-group">
+                        <label>Stay Duration</label>
+                        <select id="stay_hours" name="stay_hours">
+                            <option value="" {% if not stay_hours %}selected{% endif %}>Any Duration</option>
+                            <option value="3" {% if stay_hours == '3' %}selected{% endif %}>3 Hours – ₹299</option>
+                            <option value="5" {% if stay_hours == '5' %}selected{% endif %}>5 Hours – ₹399</option>
+                            <option value="9" {% if stay_hours == '9' %}selected{% endif %}>9 Hours – ₹599</option>
+                            <option value="12" {% if stay_hours == '12' %}selected{% endif %}>12 Hours – ₹799</option>
+                        </select>
+                    </div>
+                    <div class="search-row">
+                        <div class="search-group">
+                            <label>Check-in</label>
+                            <input type="date" id="check_in" name="check_in" value="{{ check_in }}">
+                        </div>
+                        <div class="search-group">
+                            <label>Check-out</label>
+                            <input type="date" id="check_out" name="check_out" value="{{ check_out }}">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-secondary search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="section">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div>
+                    <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 5px;">
+                        Hotels in {{ city }}
+                    </h2>
+                    <p style="color: #666;">{{ hotels|length }} hotels found</p>
+                </div>
+                
+                <!-- Filters -->
+                <div style="display: flex; gap: 15px;">
+                    <select class="filter-select" id="sort_by" onchange="sortHotels()">
+                        <option value="">Sort by</option>
+                        <option value="price_low">Price: Low to High</option>
+                        <option value="price_high">Price: High to Low</option>
+                        <option value="rating">Rating</option>
+                        <option value="distance">Distance</option>
+                    </select>
+                </div>
+            </div>
+            
+            {% if hotels %}
+            <div class="hotels-grid" id="hotels_grid">
+                {% for hotel in hotels %}
+                <div class="hotel-card" data-hotel-id="{{ hotel.id }}" data-price="{{ hotel.price }}" data-rating="{{ hotel.rating }}" data-distance="{{ hotel.distance }}">
+                    <div class="hotel-image">
+                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="{{ hotel.name }}">
+                        <span class="hotel-badge">
+                            <i class="fas fa-bolt"></i> Quick Book
+                        </span>
+                        <span class="hotel-price">₹{{ hotel.display_price }} / {{ hotel.price_label }}</span>
+                    </div>
+                    <div class="hotel-content">
+                        <h3 class="hotel-name">{{ hotel.name }}</h3>
+                        <p class="hotel-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ hotel.location }}, {{ hotel.city }}
+                        </p>
+                        <div class="hotel-distance">
+                            <div class="distance-item">
+                                <i class="fas fa-train"></i>
+                                {{ hotel.near_station[:25] }}... ({{ hotel.distance_station }} km)
+                            </div>
+                            <div class="distance-item">
+                                <i class="fas fa-bus"></i>
+                                {{ hotel.near_bus_stop[:25] }}... ({{ hotel.distance_bus }} km)
+                            </div>
+                        </div>
+                        <div class="hotel-footer">
+                            <div class="hotel-rating">
+                                <span class="stars">
+                                    {% for i in range(5) %}
+                                        {% if i < hotel.rating|int %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="rating-value">{{ hotel.rating }}</span>
+                                <span class="review-count">({{ hotel.review_count }} reviews)</span>
+                            </div>
+                            <a href="/hotel/{{ hotel.id }}" class="btn btn-primary btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3 class="empty-title">No Hotels Found</h3>
+                <p class="empty-text">Try searching for a different city or check back later</p>
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Go to Home
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 RailBusAtithi. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function sortHotels() {
+            const sortBy = document.getElementById('sort_by').value;
+            const grid = document.getElementById('hotels_grid');
+            const cards = Array.from(grid.querySelectorAll('.hotel-card'));
+            
+            cards.sort((a, b) => {
+                if (sortBy === 'price_low') {
+                    return parseInt(a.dataset.price) - parseInt(b.dataset.price);
+                } else if (sortBy === 'price_high') {
+                    return parseInt(b.dataset.price) - parseInt(a.dataset.price);
+                } else if (sortBy === 'rating') {
+                    return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+                } else if (sortBy === 'distance') {
+                    return parseFloat(a.dataset.distance) - parseFloat(b.dataset.distance);
+                }
+                return 0;
+            });
+            
+            cards.forEach(card => grid.appendChild(card));
+        }
+    </script>
+</body>
+</html>
+

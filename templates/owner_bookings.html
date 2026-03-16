@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body class="dashboard-body">
+    <!-- Mobile Header - Logo in CORNER -->
+    <div class="mobile-header">
+        <button class="hamburger-btn" id="hamburgerBtn">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <div style="flex: 1;"></div>
+        <a href="/" class="mobile-logo">
+            <div class="mobile-logo-icon">
+                <i class="fas fa-train"></i>
+            </div>
+            RailBusAtithi
+        </a>
+    </div>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    RailBusAtithi
+                </a>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar" style="background: linear-gradient(135deg, #FF6D00 0%, #FF9100 100%);">{{ user.name[0] }}</div>
+                <div class="user-info">
+                    <h4>{{ user.name }}</h4>
+                    <span>Hotel Owner</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('hotel_owner_dashboard') }}" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('add_hotel') }}" class="menu-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Hotel</span>
+                </a>
+                <a href="{{ url_for('owner_hotels') }}" class="menu-item">
+                    <i class="fas fa-hotel"></i>
+                    <span>My Hotels</span>
+                </a>
+                <a href="{{ url_for('owner_bookings') }}" class="menu-item active">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="{{ url_for('owner_analytics') }}" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('owner_settings') }}" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="page-title">Bookings</h1>
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card animate-fade animate-delay-1">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value">{{ bookings|length }}</div>
+                    <div class="stat-label">Total Bookings</div>
+                </div>
+                
+                <div class="stat-card animate-fade animate-delay-2">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-value">{{ pending_count }}</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                
+                <div class="stat-card animate-fade animate-delay-3">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="stat-value">{{ confirmed_count }}</div>
+                    <div class="stat-label">Confirmed</div>
+                </div>
+                
+                <div class="stat-card animate-fade animate-delay-4">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <div class="stat-value">₹{{ total_revenue|int }}</div>
+                    <div class="stat-label">Revenue</div>
+                </div>
+            </div>
+            
+            <!-- Filter Tabs -->
+            <div class="card" style="margin-top: 25px;">
+                <div class="card-header">
+                    <h3 class="card-title">All Bookings</h3>
+                </div>
+                <div class="card-body">
+                    {% if bookings %}
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Hotel</th>
+                                    <th>Guest</th>
+                                    <th>Check-in</th>
+                                    <th>Check-out</th>
+                                    <th>Rooms</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td>#RB{{ '%04d'|format(booking.id) }}</td>
+                                    <td>{{ booking.hotel.name }}</td>
+                                    <td>{{ booking.user.name }}</td>
+                                    <td>{{ booking.check_in.strftime('%d %b %Y') }}</td>
+                                    <td>{{ booking.check_out.strftime('%d %b %Y') }}</td>
+                                    <td>{{ booking.rooms }}</td>
+                                    <td><strong>₹{{ booking.total_price|int }}</strong></td>
+                                    <td>
+                                        <span class="status-badge {{ booking.status }}">
+                                            {{ booking.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if booking.status == 'pending' %}
+                                        <div class="action-btns">
+                                            <a href="{{ url_for('manage_booking', booking_id=booking.id, action='accept') }}" 
+                                               class="action-btn accept" title="Accept">
+                                                <i class="fas fa-check"></i>
+                                            </a>
+                                            <a href="{{ url_for('manage_booking', booking_id=booking.id, action='reject') }}" 
+                                               class="action-btn reject" title="Reject">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        </div>
+                                        {% else %}
+                                        <span style="color: #999;">-</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <h3 class="empty-title">No Bookings Yet</h3>
+                        <p class="empty-text">Bookings will appear here when customers book your hotels</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- JS handled by main.js - no inline scripts needed -->
+</body>
+</html>
+

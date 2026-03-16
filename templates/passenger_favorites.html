@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorites - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body class="dashboard-body">
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
+    
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="hamburger-btn" id="hamburgerBtn">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <a href="/" class="mobile-logo">
+            <div class="mobile-logo-icon">
+                <i class="fas fa-train"></i>
+            </div>
+            RailBusAtithi
+        </a>
+    </div>
+    
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    RailBusAtithi
+                </a>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">{{ user.name[0] }}</div>
+                <div class="user-info">
+                    <h4>{{ user.name }}</h4>
+                    <span>{{ user.role }}</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('passenger_dashboard') }}" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('index') }}#hotels" class="menu-item">
+                    <i class="fas fa-search"></i>
+                    <span>Search Hotels</span>
+                </a>
+                <a href="{{ url_for('booking_history') }}" class="menu-item">
+                    <i class="fas fa-history"></i>
+                    <span>Booking History</span>
+                </a>
+                <a href="{{ url_for('favorites') }}" class="menu-item active">
+                    <i class="fas fa-heart"></i>
+                    <span>Favorites</span>
+                </a>
+                <a href="{{ url_for('profile') }}" class="menu-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="{{ url_for('settings') }}" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="page-title">Your Favorites</h1>
+                <div class="header-actions">
+                    <a href="{{ url_for('index') }}#hotels" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Find More Hotels
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Hotels Grid -->
+            <div class="hotels-grid">
+                {% for hotel in hotels %}
+                <div class="hotel-card">
+                    <div class="hotel-image">
+                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="{{ hotel.name }}">
+                        <span class="hotel-badge">Featured</span>
+                        <span class="hotel-price">₹{{ hotel.price }}/night</span>
+                    </div>
+                    <div class="hotel-content">
+                        <h3 class="hotel-name">{{ hotel.name }}</h3>
+                        <p class="hotel-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ hotel.city }}
+                        </p>
+                        <div class="hotel-distance">
+                            <span class="distance-item">
+                                <i class="fas fa-train"></i> {{ hotel.near_station }}
+                            </span>
+                            <span class="distance-item">
+                                <i class="fas fa-bus"></i> {{ hotel.near_bus_stop }}
+                            </span>
+                        </div>
+                        <div class="hotel-footer">
+                            <div class="hotel-rating">
+                                <span class="stars">
+                                    {% for i in range(5) %}
+                                        {% if i < hotel.rating|int %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="rating-value">{{ hotel.rating }}</span>
+                            </div>
+                            <a href="/hotel/{{ hotel.id }}" class="btn btn-primary btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if not hotels %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="empty-state">
+                        <div class="empty-icon">❤️</div>
+                        <h3 class="empty-title">No Favorites Yet</h3>
+                        <p class="empty-text">Start exploring hotels and save your favorites</p>
+                        <a href="{{ url_for('index') }}#hotels" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Find Hotels
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+// Enhanced JS handled by main.js initMobileMenu() - standardized across all dashboards
+    </script>
+</body>
+</html>

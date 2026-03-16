@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Hotel - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body class="dashboard-body">
+    <!-- Mobile Header (visible on mobile) -->
+    <div class="mobile-header">
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <a href="/" class="mobile-logo">
+            <div class="mobile-logo-icon">
+                <i class="fas fa-train"></i>
+            </div>
+            RailBusAtithi
+        </a>
+    </div>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    RailBusAtithi
+                </a>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar owner">{{ user.name[0] }}</div>
+                <div class="user-info">
+                    <h4>{{ user.name }}</h4>
+                    <span>Hotel Owner</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('hotel_owner_dashboard') }}" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('add_hotel') }}" class="menu-item active">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Hotel</span>
+                </a>
+                <a href="{{ url_for('owner_hotels') }}" class="menu-item">
+                    <i class="fas fa-hotel"></i>
+                    <span>My Hotels</span>
+                </a>
+                <a href="{{ url_for('owner_bookings') }}" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="{{ url_for('owner_analytics') }}" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('owner_settings') }}" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="page-title">Add New Hotel</h1>
+                <div class="header-actions">
+                    <a href="{{ url_for('hotel_owner_dashboard') }}" class="btn btn-outline">
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Hotel Information</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('add_hotel') }}" enctype="multipart/form-data" data-validate>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">Hotel Name *</label>
+                                <input type="text" name="name" class="form-control" placeholder="Enter hotel name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">City *</label>
+                                <input type="text" name="city" class="form-control" placeholder="Enter city name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">Full Address *</label>
+                                <textarea name="location" class="form-control" rows="2" placeholder="Enter complete address" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">Price per Night (₹) *</label>
+                                <input type="number" name="price" class="form-control" placeholder="e.g., 2500" min="500" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Nearest Railway Station</label>
+                                <input type="text" name="near_station" class="form-control" placeholder="e.g., Mumbai Central">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Distance to Station (km)</label>
+                                <input type="number" name="distance_station" class="form-control" placeholder="e.g., 2.5" step="0.1" min="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Nearest Bus Stand</label>
+                                <input type="text" name="near_bus_stop" class="form-control" placeholder="e.g., Dadar Bus Depot">
+                            </div>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">Total Rooms *</label>
+                                <input type="number" name="total_rooms" class="form-control" placeholder="e.g., 20" min="1" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">Available Rooms *</label>
+                                <input type="number" name="available_rooms" class="form-control" placeholder="e.g., 15" min="0" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Rating (out of 5)</label>
+                                <input type="number" name="rating" class="form-control" placeholder="e.g., 4.2" step="0.1" min="0" max="5">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Amenities (comma separated)</label>
+                                <input type="text" name="amenities" class="form-control" placeholder="WiFi, AC, Parking, Restaurant, Laundry">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Hotel Description</label>
+                            <textarea name="description" class="form-control" rows="5" placeholder="Describe your hotel facilities, location advantages, special features..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Hotel Photos (Upload multiple)</label>
+                            <input type="file" id="photo-input" name="photos" class="form-control" multiple accept="image/*">
+                            <small class="form-hint">Upload JPG/PNG images (max 5MB each). First image will be main photo.</small>
+                            <div class="photo-preview" id="photo-preview" style="margin-top: 10px;"></div>
+                        </div>
+                        
+                        <div class="form-actions" style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px;">
+                            <a href="{{ url_for('hotel_owner_dashboard') }}" class="btn btn-outline">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Add Hotel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- JS handled by main.js - no inline scripts needed -->
+</body>
+</html>

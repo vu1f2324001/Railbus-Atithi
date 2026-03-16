@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - RailBusAtithi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏨</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    <div class="logo-text">
+                        Rail<span>Bus</span>Atithi
+                    </div>
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/search">Search Hotels</a></li>
+                    {% if session.get('user_id') %}
+                        {% if session.get('user_role') == 'hotel_owner' %}
+                            <li><a href="{{ url_for('hotel_owner_dashboard') }}">Dashboard</a></li>
+                        {% endif %}
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline btn-sm">Login</a>
+                        <a href="{{ url_for('register') }}?role=passenger" class="btn btn-primary btn-sm">Sign Up</a>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Pricing Section -->
+    <section class="hero" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 120px 0 80px; min-height: auto;">
+        <div class="container">
+            <div class="hero-content" style="text-align: center;">
+                <span class="hero-badge" style="background: rgba(255,255,255,0.2);">
+                    <i class="fas fa-clock"></i> Short Stay Plans
+                </span>
+                <h1 class="hero-title" style="color: white; font-size: 44px;">
+                    Flexible Short Stay Plans
+                </h1>
+                <p class="hero-subtitle" style="color: rgba(255,255,255,0.9); max-width: 600px; margin: 0 auto 50px;">
+                    Perfect for layovers, quick meetings or early arrivals. Clean rooms, no hassle.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Cards Section -->
+    <section class="section" style="padding: 80px 0;">
+        <div class="container">
+            <div class="pricing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto;">
+                <!-- 3 Hours Plan -->
+                <div class="pricing-card" style="background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); padding: 40px 30px; text-align: center; position: relative; transition: all 0.3s ease; border: 2px solid transparent;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">3h</div>
+                    <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 10px; color: #1a1a2e;">3 Hours Stay</h3>
+                    <div style="font-size: 36px; font-weight: 800; color: #FF6D00; margin-bottom: 25px;">₹299</div>
+                    <ul style="list-style: none; padding: 0; margin-bottom: 30px; text-align: left;">
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>Clean & comfortable room</li>
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>AC + WiFi included</li>
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>Hot water 24/7</li>
+                    </ul>
+                    <a href="/search" class="btn btn-primary" style="width: 100%; padding: 16px;">
+                        <i class="fas fa-bed"></i> Book Now
+                    </a>
+                </div>
+
+                <!-- 5 Hours Plan -->
+                <div class="pricing-card popular" style="background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); padding: 50px 30px; text-align: center; position: relative; transition: all 0.3s ease; border: 3px solid #FF6D00;">
+                    <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #FF6D00; color: white; padding: 8px 24px; border-radius: 25px; font-size: 13px; font-weight: 700;">Most Popular</div>
+                    <div style="font-size: 48px; margin-bottom: 20px;">5h</div>
+                    <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 10px; color: #1a1a2e;">5 Hours Stay</h3>
+                    <div style="font-size: 36px; font-weight: 800; color: #FF6D00; margin-bottom: 25px;">₹399</div>
+                    <ul style="list-style: none; padding: 0; margin-bottom: 30px; text-align: left;">
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>Everything in 3h + Breakfast</li>
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>Complimentary tea/coffee</li>
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>Priority check-in</li>
+                    </ul>
+                    <a href="/search" class="btn btn-primary" style="width: 100%; padding: 16px; background: linear-gradient(135deg, #FF6D00 0%, #E65100 100%);">
+                        <i class="fas fa-bed"></i> Book Now
+                    </a>
+                </div>
+
+                <!-- 9 Hours Plan -->
+                <div class="pricing-card" style="background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); padding: 40px 30px; text-align: center; position: relative; transition: all 0.3s ease; border: 2px solid transparent;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">9h</div>
+                    <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 10px; color: #1a1a2e;">9 Hours Stay</h3>
+                    <div style="font-size: 36px; font-weight: 800; color: #FF6D00; margin-bottom: 25px;">₹599</div>
+                    <ul style="list-style: none; padding: 0; margin-bottom: 30px; text-align: left;">
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>Everything in 5h + Lunch</li>
+                    <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>Room service available</li>
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>Extended checkout option</li>
+                    </ul>
+                    <a href="/search" class="btn btn-primary" style="width: 100%; padding: 16px;">
+                        <i class="fas fa-bed"></i> Book Now
+                    </a>
+                </div>
+
+                <!-- 12 Hours Plan -->
+                <div class="pricing-card" style="background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); padding: 40px 30px; text-align: center; position: relative; transition: all 0.3s ease; border: 2px solid transparent;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">12h</div>
+                    <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 10px; color: #1a1a2e;">12 Hours Stay</h3>
+                    <div style="font-size: 36px; font-weight: 800; color: #FF6D00; margin-bottom: 25px;">₹799</div>
+                    <ul style="list-style: none; padding: 0; margin-bottom: 30px; text-align: left;">
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>All meals included</li>
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>Free laundry service</li>
+                    <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #333;"><i class="fas fa-check-circle" style="color: #4CAF50;"></i>VIP checkout</li>
+                    </ul>
+                    <a href="/search" class="btn btn-primary" style="width: 100%; padding: 16px;">
+                        <i class="fas fa-bed"></i> Book Now
+                    </a>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 60px;">
+                <p style="font-size: 16px; color: #666; max-width: 600px; margin: 0 auto 40px;">
+                    All plans include AC room, WiFi, hot water, and are available 24/7 near railway stations & bus stands.
+                </p>
+                <a href="/search" class="btn btn-primary btn-lg">
+                    <i class="fas fa-search"></i> Find Available Rooms
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Footer content same as index -->
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 RailBusAtithi. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
