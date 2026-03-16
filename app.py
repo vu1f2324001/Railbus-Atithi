@@ -17,7 +17,7 @@ app = Flask(__name__)
 app.secret_key = 'railbusatithi_secret_key_2024'
 
 # Database Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
@@ -28,7 +28,7 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 db = SQLAlchemy(app)
 with app.app_context():
     db.create_all()
-    
+
 # ==================== DATABASE MODELS ====================
 
 class User(db.Model):
