@@ -26,7 +26,9 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
-
+with app.app_context():
+    db.create_all()
+    
 # ==================== DATABASE MODELS ====================
 
 class User(db.Model):
