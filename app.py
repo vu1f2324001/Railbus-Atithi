@@ -17,7 +17,9 @@ app = Flask(__name__)
 app.secret_key = 'railbusatithi_secret_key_2024'
 
 # Database Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/database.db'
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
@@ -26,8 +28,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
-with app.app_context():
-    db.create_all()
+
 
 # ==================== DATABASE MODELS ====================
 
@@ -111,6 +112,9 @@ class Advertisement(db.Model):
     budget = db.Column(db.Integer, default=0)
     status = db.Column(db.String(20), default='active')  # active, paused, completed
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+with app.app_context():
+    db.create_all()
 
 # ==================== HELPER FUNCTIONS ====================
 
