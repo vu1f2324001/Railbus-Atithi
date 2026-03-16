@@ -1,5 +1,7 @@
 from app import app
 
-# Vercel serverless entrypoint
-# app must be named 'app'
+@app.route('/api')
+def api():
+    return 'API is working'
+
 
