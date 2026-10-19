@@ -24,11 +24,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 )
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
 
-# Create upload folder if not exists
+# Upload Configuration
+app.config['UPLOAD_FOLDER'] = '/tmp/railbusatithi_uploads'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
+
+# Vercel serverless environment:
+# Use a writable temporary directory, not static/uploads.
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 
 db = SQLAlchemy(app)
 
